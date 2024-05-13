@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Neomani Film Yapım Prodüksiyon | Studio</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./main.css?v=1.05">
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="pages/images/favicon.png">
+
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/loaders/FBXLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/loaders/MTLLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/loaders/OBJLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/libs/fflate.min.js"></script>
+    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/tween.js/18.6.4/tween.umd.js"></script> -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+    <script src="threex.domevents.js"></script>
+</head>
+
+<body>
+    <div id="loader">
+        <h3>Loading: <span id="percentage"></span></h3>
+    </div>
+
+    <div id="open-modal" class="modal-window">
+        <div id="modal" class="modal">
+            <button class="close-button" onclick="closeModal()"><i class="bx bx-x"></i></button>
+            <div class="modal-body">              
+                <iframe id="pageFrame" src="" name="pageFrame" width="100%" height="100%"></iframe>
+                <video src="video/420NEO.mp4" id="Video" playsinline></video>
+                <video src="video/black.mp4" id="Video" playsinline></video>
+            </div>
+        </div>
+    </div>
+    <script>
+        let scene, camera, renderer, mixer;
+        const camTimeline = gsap.timeline();
+        function init() {
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0xdddddd);
+
+            // PerspectiveCamera ilk parametresi ile dar oda için focus genişliğini ayarlıyoruz
+            camera = new THREE.PerspectiveCamera(80, window.innerWidth / window.innerHeight, 1, 5000);
+            camera.position.set(16, 10, 2);
+
+            const listener = new THREE.AudioListener();
+            camera.add(listener);
+            const sound1 = new THREE.Audio( listener );
+            const sound2 = new THREE.Audio( listener );
+            const sound3 = new THREE.Audio( listener );
+            const sound4 = new THREE.Audio( listener );
+            const audioLoader = new THREE.AudioLoader();
+            function playAudio(sound, src, loop) {
+                audioLoader.load(src, function( buffer ) {
+                    sound.setBuffer( buffer );
+                    sound.setLoop(loop);
+                    sound3.setVolume( 0.9 ); 
+                    sound4.setVolume( 0.3 );
+                    sound.play();
+                });
+            }
+           
+            light5 = new THREE.PointLight(0xFFD4AB,2 ,100);
+            
+            light5.position.set(3,14,0);   
+            light5.decay = 7;      
+            light5.castShadow = true;   
+            light5.intensity =1.5; 
+            scene.add(light5);    
+
+            light6 = new THREE.PointLight(0xFFD4AB,2 ,100);            
+            light6.position.set(-4,7,0);   
+            light6.decay = 8;                 
+            light6.intensity =2;
+            scene.add(light6);      
+  
+                       
+            //TV Yapısı Studio <div id="container">
+        
+           
+
+                var video = document.createElement('Video');                   
+                video.loop = true;             
+                var videoTexture1 = new THREE.VideoTexture(video);
+               
+            
+            
+                const plate1 = new THREE.BoxGeometry(0.1,2.0,3.5);
+                const Mat1 = new THREE.MeshMatcapMaterial({map: videoTexture1});    
+                const screen1 = new THREE.Mesh(plate1,Mat1);           
+                screen1.position.set(4.4,12.8,-4.15);                 
+                screen1.rotation.y=1.55 ;               
+                scene.add(screen1)
+            
+                const plate3 = new THREE.BoxGeometry(0.1,2.2,3.7);
+                const Mat3 = new THREE.MeshPhongMaterial({color: 0x24170E});    
+                const screen3 = new THREE.Mesh(plate3,Mat3);           
+                screen3.position.set(4.4,12.8,-4.2);                 
+                screen3.rotation.y=1.55 ;                   
+                scene.add(screen3)
+                                
+                var TV = new THREE.Group();
+                TV.add(screen1,screen3);
+                scene.add(TV)                                                        
+
+                                                   
+
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.shadowMap.enabled = true; // Gölgelerin aktifleştirilmesi
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap; // Gölge haritasının tipi
+            document.body.appendChild(renderer.domElement);
+
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.minDistance = 0;
+            controls.maxDistance = 100;
+            controls.dampingFactor = true;
+      
+            
+            // Kameranın zeminin altına girmesini engelliyoruz.
+            controls.maxPolarAngle = Math.PI / 2;
+            controls.target.set(1.8891046176108284, 12.550851267310168, 0.9445524288892678);
+
+            const domEvents = new THREEx.DomEvents(camera, renderer.domElement);
+
+
+
+
+                ///BUTTON
+         //Galeri Butonu
+        //  var video3 = document.createElement('video');
+        //             video3.src = '/video/black.mp4';
+        //             video3.loop = true;
+        //             video3.muted = true;
+        //             video3.setAttribute('webkit-playsinline', 'webkit-playsinline');
+        //             video3.play();
+
+                // var videoTexture3 = new THREE.VideoTexture(video3);               
+
+            
+//                 const plate4 = new THREE.CircleGeometry( 0.4, 32 ); 
+//                 const Mat4 = new THREE.MeshLambertMaterial({ map: videoTexture3, transparent: true, side: THREE.DoubleSide });   
+//                 const screen4 = new THREE.Mesh(plate4,Mat4);           
+//                 screen4.position.set(-5,12.9,-0.1);
+                  
+//                 screen4.rotation.y = Math.PI / 2;
+//                 scene.add(screen4);
+
+//                 renderer.domElement.addEventListener('mousemove', function (event) {
+//                 // Fare pozisyonunu normalleştirerek -1 ile 1 aralığına getir
+//                 var mouseNormalized = {
+//                 x: (event.clientX / window.innerWidth) * 2 - 1,
+//                 y: -(event.clientY / window.innerHeight) * 2 + 1
+//                  };
+
+//                // Fare pozisyonunu 3B dünyada kullanmak için vektöre dönüştür
+//               var mouse3D = new THREE.Vector3(mouseNormalized.x, mouseNormalized.y, 0.5);
+//               mouse3D.unproject(camera);
+
+//                 // Ekranın dünya koordinatlarındaki pozisyonunu ve yönünü güncelle
+//                var raycaster = new THREE.Raycaster(camera.position, mouse3D.sub(camera.position).normalize());
+//             var intersects = raycaster.intersectObject(gallery);
+
+//             if (intersects.length > 0) {
+//         // Fare plane2 üzerindeyse ekranın scale değerini artır
+//         screen4.scale.set(2, 2, 2);
+//     } else {
+//         // Fare plane2 üzerinde değilse ekranın scale değerini sıfırla
+//         screen4.scale.set(1, 1, 1);
+//     }
+// });
+//Kapı Butonu
+// const screen5 = new THREE.Mesh(plate4,Mat4);           
+//                 screen5.position.set(8,11.4,0);
+              
+//                 screen5.rotation.y = Math.PI / 2;
+//                 scene.add(screen5);
+
+//                 renderer.domElement.addEventListener('mousemove', function (event) {
+//                 // Fare pozisyonunu normalleştirerek -1 ile 1 aralığına getir
+//                 var mouseNormalized = {
+//                 x: (event.clientX / window.innerWidth) * 2 - 1,
+//                 y: -(event.clientY / window.innerHeight) * 2 + 1
+//                  };
+
+//                // Fare pozisyonunu 3B dünyada kullanmak için vektöre dönüştür
+//               var mouse3D = new THREE.Vector3(mouseNormalized.x, mouseNormalized.y, 0.5);
+//               mouse3D.unproject(camera);
+
+//                 // Ekranın dünya koordinatlarındaki pozisyonunu ve yönünü güncelle
+//                var raycaster = new THREE.Raycaster(camera.position, mouse3D.sub(camera.position).normalize());
+//             var intersects = raycaster.intersectObject(door);
+
+//             if (intersects.length > 0) {
+//         // Fare plane2 üzerindeyse ekranın scale değerini artır
+//         screen5.scale.set(2, 2, 2);
+//     } else {
+//         // Fare plane2 üzerinde değilse ekranın scale değerini sıfırla
+//         screen5.scale.set(1, 1, 1);
+//     }
+// });
+
+        
+//Tv Butonu
+// const screen6 = new THREE.Mesh(plate4,Mat4);           
+//                 screen6.position.set(2.3,12.8,-4);
+//                 screen6.material.opacity=0.4;  
+//                 //screen6.rotation.y = Math.PI/ 2;
+//                 scene.add(screen6);
+
+//                 renderer.domElement.addEventListener('mousemove', function (event) {
+//                 // Fare pozisyonunu normalleştirerek -1 ile 1 aralığına getir
+//                 var mouseNormalized = {
+//                 x: (event.clientX / window.innerWidth) * 2 - 1,
+//                 y: -(event.clientY / window.innerHeight) * 2 + 1
+//                  };
+
+//                // Fare pozisyonunu 3B dünyada kullanmak için vektöre dönüştür
+//               var mouse3D = new THREE.Vector3(mouseNormalized.x, mouseNormalized.y, 0.5);
+//               mouse3D.unproject(camera);
+
+//                 // Ekranın dünya koordinatlarındaki pozisyonunu ve yönünü güncelle
+//                var raycaster = new THREE.Raycaster(camera.position, mouse3D.sub(camera.position).normalize());
+//             var intersects = raycaster.intersectObject(tlv);
+
+//             if (intersects.length > 0) {
+//         // Fare plane2 üzerindeyse ekranın scale değerini artır
+//         screen6.scale.set(2, 2, 2);
+//     } else {
+//         // Fare plane2 üzerinde değilse ekranın scale değerini sıfırla
+//         screen6.scale.set(1, 1, 1);
+//     }
+// });
+
+      //BUTTON
+      
+            // Galeri: Üst Kat. Panoda tıklanabilir görünmez obje
+            const galleryBox = new THREE.BoxGeometry(1, 2.5, 3.7);
+            const galleryMaterial = new THREE.MeshNormalMaterial({ visible: false});
+            // const material = new THREE.MeshNormalMaterial({visible: false});
+            const gallery = new THREE.Mesh(galleryBox, galleryMaterial);
+            gallery.position.x = -6;
+            gallery.position.y = 12;
+            gallery.position.z = 0;
+            scene.add(gallery);
+            function galleryEvent() {
+                changeIframe("pages/galeri.html");
+                setTimeout(() => {
+                    let modal = document.getElementById('open-modal');
+                    modal.classList.add("open");
+                }, 500);
+            };
+            domEvents.addEventListener(gallery, 'click', event => {
+                playAudio(sound1, 'audio/click2.mp3', false);
+                galleryEvent();     
+                animate();           
+            });
+            domEvents.addEventListener(gallery, 'touchstart', event => {
+                playAudio(sound1, 'audio/click2.mp3', false);
+                galleryEvent();
+            });
+
+            // Kapı: Anasayfa. Kapı üzerinde tıklanabilir görünmez obje
+            const doorBox = new THREE.BoxGeometry(1, 0.5, 1);
+            const doorMaterial = new THREE.MeshNormalMaterial({ visible: false});
+            // const material = new THREE.MeshNormalMaterial({visible: false});
+            const door = new THREE.Mesh(doorBox, doorMaterial);
+            door.position.x = 9;
+            door.position.y = 11.2;
+            door.position.z = 0;
+            scene.add(door);
+            function doorEvent() {
+                camTimeline.to(camera.position, {
+                    x: 1.866765468796324,
+                    y: 12.550851267310168,
+                    z: 0.9424393704848584,
+                    duration: 1.2,
+                    onUpdate: function () {
+                        controls.target.set(1.8891046176108284, 12.550851267310168, 0.9445524288892678);
+                        controls.update();
+                    }
+                });
+                setTimeout(() => {
+                    window.location.href = "index.html";
+                }, 1200);
+            };
+            domEvents.addEventListener(door, 'click', event => {
+                playAudio(sound1, 'audio/transition.mp3', false);
+                doorEvent();
+            });
+            domEvents.addEventListener(door, 'touchstart', event => {
+                playAudio(sound1, 'audio/transition.mp3', false);
+                doorEvent();
+            });
+
+       
+
+                    // televizyon: Üst Kat. tv yanında tıklanabilir görünmez obje
+                    const tlvBox = new THREE.BoxGeometry(1, 1, 1); 
+            const tlvMaterial = new THREE.MeshNormalMaterial({ visible: false });
+            // const material = new THREE.MeshNormalMaterial({visible: false});
+            const tlv = new THREE.Mesh(tlvBox, tlvMaterial);
+            tlv.position.x = 2.3;
+            tlv.position.y = 12.8;
+            tlv.position.z = -4.3;
+            scene.add(tlv);               
+      
+            domEvents.addEventListener(tlv, 'click', event => {               
+                video.play();
+            });
+         
+
+           
+            var manager = new THREE.LoadingManager();
+            const fbxLoader = new THREE.FBXLoader(manager);
+
+            const object = new THREE.Object3D(); 
+            fbxLoader.load('interior/Roof_New_Texture2.fbx', (object) => {
+                manager.onProgress = function(item, loaded, total) {
+                    var percentage = parseInt((loaded / total * 100)) + '%';
+                    document.getElementById('percentage').textContent = percentage;  
+                    
+                object.traverse(function (child) {
+                if (child.isMesh) {
+                    child.castShadow = true; // Mesh'in gölgeleri yaymasını sağlar
+                    child.receiveShadow = true; // Mesh'in gölgeleri almasını sağlar
+                }
+                });                  
+                   
+
+                };
+               
+
+                manager.onLoad = function ( ) {
+                    var preloader = document.getElementById('loader');
+                    preloader.style.display = 'none';
+                };
+
+                playAudio(sound3, 'audio/fan.mp3', true);
+                playAudio(sound4, 'audio/yigit.mp3', true);
+
+                mixer = new THREE.AnimationMixer(object);
+                const animationAction = mixer.clipAction(
+                    object.animations[0]
+                );
+
+
+                animationAction.play();
+                scene.add(object);
+                // object.scale.multiplyScalar(2);
+                camTimeline.to(camera.position, {
+                    x: 3,
+                    y: 10,
+                    z: 0.8,
+                    duration: 1.2,
+                    onUpdate: function () {
+                        camera.rotation.z = 12;
+                        controls.update();
+                    }
+                });
+                setTimeout(() => {
+                    controls.maxDistance = 4;
+                    controls.update();
+                }, 1200);
+                animate();
+            });                                
+                    
+
+            const object23 = new THREE.Object3D();           
+
+            fbxLoader.load('interior/pervane_middle.fbx', (object23) => {   
+                object2 = object23;
+                object2.position.set(4.27,16.359,0);  
+                
+                object23.traverse(function (child) {
+                if (child.isMesh) {
+                    child.castShadow = true; // Mesh'in gölgeleri yaymasını sağlar
+                    child.receiveShadow = true; // Mesh'in gölgeleri almasını sağlar
+                }
+                });       
+                scene.add(object2) ;
+            });                
+                      
+
+            
+      
+            
+        }
+        const clock = new THREE.Clock();           
+                                  
+        function animate() {
+            renderer.render(scene, camera);
+            requestAnimationFrame(animate);           
+            mixer.update(clock.getDelta());
+            controls.update();
+            object2.rotation.y += 0.06;              
+           
+        }
+      
+
+        init(); 
+        animate();
+    </script>
+    <script>
+        function changeIframe(change) {
+         document.getElementById('pageFrame').src = change;
+        }
+
+        let modal = document.getElementById('open-modal');
+        modal.addEventListener("click",function(e){
+           closeModal();
+        },false);
+
+        function closeModal() {
+            changeIframe("");
+            modal.classList.remove("open");
+            
+        }
+       
+    </script>
+</body>
+
+</html>

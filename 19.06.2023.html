@@ -1,0 +1,1088 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Neomani Film Yapım Prodüksiyon</title>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./main.css?v=1.05">
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="pages/images/favicon.png">
+    
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/build/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/loaders/FBXLoader.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/controls/OrbitControls.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/libs/fflate.min.js"></script>       
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>  
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/postprocessing/EffectComposer.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/postprocessing/ShaderPass.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/postprocessing/RenderPass.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/postprocessing/GlitchPass.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/shaders/DigitalGlitch.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/objects/Reflector.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.132.2/examples/js/shaders/CopyShader.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/dat-gui/0.7.7/dat.gui.min.js"></script>
+    <script src="threex.domevents.js"></script>
+    <script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>  
+
+</head>
+
+<body>     
+   
+   <div id="loader">
+        <h3>Loading: <span id="percentage"></span></h3>   
+        <br>     
+           <div>
+            <button id="click-button" > Start </button> 
+                     
+          </div>
+       
+    </div>    
+  
+    <div id="open-modal" class="modal-window">
+        <div id="modal" class="modal">
+            <button class="close-button" onclick="closeModal()"><i class="bx bx-x"></i></button>
+            <div class="modal-body">
+                
+                <iframe id="pageFrame" src="" name="pageFrame" width="100%" height="100%"></iframe>           
+               <div id="container" style =" visibility: hidden;">
+            <video id="Video" src="../video/tvout.mp4" playsinline></video>    
+            <video id="Video2" src="../video/trailer.mp4" playsinline></video>
+            <video id="Video3"  src="../video/black.mp4" playsinline></video>
+            <video id="Video4"  src="../video/flash2.mp4" playsinline></video>
+        </div>
+            </div>
+           
+        </div>
+    </div>    
+ 
+    <script async src="https://unpkg.com/es-module-shims@1.6.3/dist/es-module-shims.js"></script>
+        
+
+        <script>
+                
+        const RenderPass = THREE.RenderPass;
+        const GlitchPass = THREE.GlitchPass;
+   
+
+        var object3 = new THREE.Object3D();
+        
+        let scene, camera, renderer, mixer;
+        const camTimeline = gsap.timeline();
+
+        const listener = new THREE.AudioListener();
+
+        const sound1 = new THREE.Audio( listener );
+        const sound2 = new THREE.Audio( listener );
+        const sound3 = new THREE.Audio( listener );
+        const audioLoader = new THREE.AudioLoader();
+        function playAudio(sound, src, loop) {
+            audioLoader.load(src, function( buffer ) {
+                sound.setBuffer( buffer );
+                sound.setLoop(loop);
+                sound.setVolume( 1.2 );
+                
+            });
+        }
+                       
+        function init() {
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x001120);
+           
+           
+            camera = new THREE.PerspectiveCamera(5, window.innerWidth / window.innerHeight, 1, 1000);
+            camera.position.set(115, 129, 345);
+            camera.add(listener);
+
+
+
+            const light = new THREE.HemisphereLight( 0xFED396, 0x4B371B, 0.3 );
+            light.position.set(23.335,2.466,-9.665);
+            scene.add( light );
+
+            const light2 = new THREE.HemisphereLight( 0xFED396, 0x4B371B, 0.3 );
+            light2.position.set(-23.335,2.466,-9.665);
+            scene.add( light2 );
+
+            light3 = new THREE.PointLight(0xf3905b,0.5,100);
+            light3.position.set(23.335,2.466,-9.665);
+            scene.add(light3);
+
+            light4 = new THREE.PointLight(0xf3905b,0.5,100);
+            light4.position.set(11.236,7.89,-0.768);
+            scene.add(light4);
+
+            light5 = new THREE.PointLight(0xf3905b,0.5,100);
+            light5.position.set(11.236,7.89,9.9);
+            scene.add(light5);
+           
+            light10 = new THREE.PointLight(0xf3905b,0.5,100);
+            light10.position.set(-5.8,7.687,9.84);
+            scene.add(light10);     
+           
+            light16 = new THREE.PointLight(0xf3905b,1.3,20);
+            light16.position.set(-0.23,11.766,15.766);
+            light16.castShadow = true;
+            scene.add(light16);           
+           
+            light17 = new THREE.PointLight(0xf3905b,1,50);
+            light17.position.set(26.23,4.766,10.766); 
+            // light17.castShadow = true;             
+            scene.add(light17);           
+
+            light18 = new THREE.DirectionalLight(0xf3905b,0.5,10);
+            light18.position.set(-35.612,20.766,14.941);       
+            light18.castShadow = true;  
+           
+            scene.add(light18);
+          
+            light3 = new THREE.PointLight(0xf3905b,2,100);
+            light3.position.set(23.335,2.466,-9.665);
+            scene.add(light3);
+
+            light4 = new THREE.PointLight(0xf3905b,.2,100);
+            light4.position.set(11.236,7.89,-0.768);
+            scene.add(light4);
+
+            light5 = new THREE.PointLight(0xf3905b,.2,100);
+            light5.position.set(11.236,7.89,9.9);
+            scene.add(light5);
+
+            light6 = new THREE.PointLight(0xf3905b,.2,100);
+            light6.position.set(23.335,6.466,-9.665);
+            scene.add(light6);
+
+            light7 = new THREE.PointLight(0xf3905b,.2,100);
+            light7.position.set(3.962,15.224,8.591);
+            scene.add(light7);
+
+            light8 = new THREE.PointLight(0xf3905b,.2,100);
+            light8.position.set(3.923,15.367,0.158);
+            scene.add(light8);
+
+            light9 = new THREE.PointLight(0xf3905b,.2,100);
+            light9.position.set(11.2,7.89,9.9);
+            scene.add(light9);
+
+            light10 = new THREE.PointLight(0xf3905b,1,100);
+            light10.position.set(-5.8,7.687,9.84);
+            scene.add(light10);
+            
+            light11 = new THREE.PointLight(0xf3905b,2,100);
+            light11.position.set(-.025,14,9.4);
+            scene.add(light11);
+            
+            light12 = new THREE.PointLight(0xf3905b,2,100);
+            light12.position.set(2.881,19.573,4.48);
+            scene.add(light12);
+
+            light13 = new THREE.PointLight(0xf3905b,2,100);
+            light13.position.set(4.544,4.298,4.68);
+            scene.add(light13);
+
+            light14 = new THREE.PointLight(0xf3905b,2,100);
+            light14.position.set(-4.325,4.298,4.436);
+            scene.add(light14);
+
+            light15 = new THREE.PointLight(0xf3905b,.5,100);
+            light15.position.set(-6.612,6.766,9.951);
+            scene.add(light15);
+
+            light16 = new THREE.PointLight(0xf3905b,.5,100);
+            light16.position.set(-0.23,6.766,15.766);
+            scene.add(light16);
+
+            light17 = new THREE.PointLight(0xf3905b,.5,100);
+            light17.position.set(-6.612,6.766,7.941);
+            scene.add(light17);
+
+            light18 = new THREE.DirectionalLight(0xf3905b,1.3,100);
+            light18.position.set(-16.612,17.766,10.941);         
+            scene.add(light18);
+                  
+            const renderScene = new RenderPass( scene, camera );                        
+                                                                                         
+            const spotLight = new THREE.SpotLight( 0xBBF8FE, 3 );
+            spotLight.position.set( 0, 30, 4 );
+            spotLight.penumbra=0.2;           
+            spotLight.Physically=1;
+            spotLight.castShadow = true;
+            scene.add(spotLight);
+
+            // scene.fog = new THREE.Fog( 0x2d425b, 370, 415);
+
+            scene.fog = new THREE.Fog( 0x2d425b, 370, 405);
+
+            renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            renderer.shadowMap.enabled = true; // Gölgelerin aktifleştirilmesi
+            renderer.shadowMap.type = THREE.PCFSoftShadowMap; // Gölge haritasının tipi
+            document.body.appendChild(renderer.domElement);
+           
+            composer = new THREE.EffectComposer(renderer);
+            let renderPass = new RenderPass(scene, camera);
+            composer.addPass(renderPass);
+            let glitchPass = new GlitchPass();
+            glitchPass.goWild = false;
+            glitchPass.curF = 0.05; // Şiddeti azaltmak için değeri artırın
+            glitchPass.randX = 0.1; // Titremeyi kontrol etmek için değeri değiştirin
+            composer.addPass(glitchPass);
+           
+            controls = new THREE.OrbitControls(camera, renderer.domElement);
+            controls.minDistance = 80;
+            controls.maxDistance = 380;
+            controls.enabledDamping = true;
+            controls.autoRotate = true;
+            controls.autoRotateSpeed = 0.1;   
+            controls.rotateSpeed = 0.6 ;                                     
+   
+
+            // const backgroundSp = new THREE.SphereGeometry (405,30,30);
+            // var backgroundSp2 = new THREE.MeshBasicMaterial({
+            // color: 0xff0000,
+            // side: THREE.DoubleSide });
+            // const backgroundSphere = new THREE.Mesh(backgroundSp, backgroundSp2);           
+            // scene.add(backgroundSphere)
+
+            // Kameranın zeminin altına girmesini engelliyoruz.
+            controls.maxPolarAngle = Math.PI / 2.09;
+            controls.target.set(2.7226311328134223, 9.219376713683292, 2.429712536121185);
+
+            const domEvents = new THREEx.DomEvents(camera, renderer.domElement);        
+      
+            var video4 = document.getElementById('Video4');                 
+            video4.loop = true;
+            video4.muted = false;
+            video4.volume = 1;           
+                   
+            var videoTexture4 = new THREE.VideoTexture(video4);             
+
+            var video3 = document.getElementById('Video3');                 
+                    video3.loop = true;
+                    video3.muted = true;
+                   
+                var videoTexture3 = new THREE.VideoTexture(video3);  
+          
+                const plate6 = new THREE.CircleGeometry( 0.8, 32 ); 
+                const Mat6 = new THREE.MeshLambertMaterial({ map: videoTexture3, transparent: true, side: THREE.DoubleSide });   
+                const screen6 = new THREE.Mesh(plate6,Mat6);           
+                screen6.position.set(3.7,12,4.5);
+                screen6.material.opacity=1;  
+                screen6.rotation.y = Math.PI / 2;
+                screen6.reflection = true
+                scene.add(screen6);
+
+                renderer.domElement.addEventListener('mousemove', function (event) {
+                // Fare pozisyonunu normalleştirerek -1 ile 1 aralığına getir
+                var mouseNormalized = {
+                x: (event.clientX / window.innerWidth) * 2 - 1,
+                y: -(event.clientY / window.innerHeight) * 2 + 1
+                 };
+
+               // Fare pozisyonunu 3B dünyada kullanmak için vektöre dönüştür
+              var mouse3D = new THREE.Vector3(mouseNormalized.x, mouseNormalized.y, 0.5);
+              mouse3D.unproject(camera);
+
+                // Ekranın dünya koordinatlarındaki pozisyonunu ve yönünü güncelle
+               var raycaster = new THREE.Raycaster(camera.position, mouse3D.sub(camera.position).normalize());
+            var intersects = raycaster.intersectObject(stPlace);
+
+            if (intersects.length > 0) {
+        // Fare plane2 üzerindeyse ekranın scale değerini artır
+        screen6.scale.set(2, 2, 2);
+    } else {
+        // Fare plane2 üzerinde değilse ekranın scale değerini sıfırla
+        screen6.scale.set(1, 1, 1);
+    }
+});
+//Kamera Butonu
+                const screen7 = new THREE.Mesh(plate6,Mat6);           
+                screen7.position.set(2,12.5,-6.5);
+               
+                screen7.rotation.y = -Math.PI / 3;
+                scene.add(screen7);
+
+                renderer.domElement.addEventListener('mousemove', function (event) {
+    var mouseNormalized = {
+        x: (event.clientX / window.innerWidth) * 2 - 1,
+        y: -(event.clientY / window.innerHeight) * 2 + 1
+    };
+    var mouse3D = new THREE.Vector3(mouseNormalized.x, mouseNormalized.y, 0.5);
+    mouse3D.unproject(camera);
+    var raycaster = new THREE.Raycaster(camera.position, mouse3D.sub(camera.position).normalize());
+    var intersects = raycaster.intersectObject(prPlace);
+
+    if (intersects.length > 0) {
+        screen7.scale.set(2, 2, 2);        
+    } else {
+        screen7.scale.set(1, 1, 1);
+    }
+});  
+//Pencere Butonu
+                const screen8 = new THREE.Mesh(plate6,Mat6);           
+                screen8.position.set(0,6.2,-9.1);
+               
+                scene.add(screen8);
+
+                renderer.domElement.addEventListener('mousemove', function (event) {
+    var mouseNormalized = {
+        x: (event.clientX / window.innerWidth) * 2 - 1,
+        y: -(event.clientY / window.innerHeight) * 2 + 1
+    };
+    var mouse3D = new THREE.Vector3(mouseNormalized.x, mouseNormalized.y, 0.5);
+    mouse3D.unproject(camera);
+    var raycaster = new THREE.Raycaster(camera.position, mouse3D.sub(camera.position).normalize());
+    var intersects = raycaster.intersectObject(scPlace);
+
+    if (intersects.length > 0) {
+        screen8.scale.set(2, 2, 2);
+    } else {
+        screen8.scale.set(1, 1, 1);
+    }
+});
+//Kitap Butonu
+const screen9 = new THREE.Mesh(plate6,Mat6);           
+                screen9.position.set(0,3.5,9.5);
+                //screen9.rotation.x = -0.5;
+                screen9.material.opacity=0.4;
+                scene.add(screen9);
+
+                renderer.domElement.addEventListener('mousemove', function (event) {
+    var mouseNormalized = {
+        x: (event.clientX / window.innerWidth) * 2 - 1,
+        y: -(event.clientY / window.innerHeight) * 2 + 1
+    };
+    var mouse3D = new THREE.Vector3(mouseNormalized.x, mouseNormalized.y, 0.5);
+    mouse3D.unproject(camera);
+    var raycaster = new THREE.Raycaster(camera.position, mouse3D.sub(camera.position).normalize());
+    var intersects = raycaster.intersectObject(abPlace);
+
+    if (intersects.length > 0) {
+        screen9.scale.set(2, 2, 2);
+    } else {
+        screen9.scale.set(1, 1, 1);
+    }
+});
+//Posta Butonu
+const screen10 = new THREE.Mesh(plate6,Mat6);           
+                screen10.position.set(19.8,5.4,6);
+               
+                 screen10.rotation.y = -Math.PI / 2;
+                scene.add(screen10);
+
+                renderer.domElement.addEventListener('mousemove', function (event) {
+    var mouseNormalized = {
+        x: (event.clientX / window.innerWidth) * 2 - 1,
+        y: -(event.clientY / window.innerHeight) * 2 + 1
+    };
+    var mouse3D = new THREE.Vector3(mouseNormalized.x, mouseNormalized.y, 0.5);
+    mouse3D.unproject(camera);
+    var raycaster = new THREE.Raycaster(camera.position, mouse3D.sub(camera.position).normalize());
+    var intersects = raycaster.intersectObject(ctPlace);
+
+    if (intersects.length > 0) {
+        screen10.scale.set(2, 2, 2);
+    } else {
+        screen10.scale.set(1, 1, 1);
+    }
+});
+//BUTTON
+                      //Tv Ekran Yapısı
+
+                var video = document.getElementById('Video');
+                    video.loop = true;
+                    video.muted = false;
+                    video.autoplay=false;
+                    video.volume = 0.05;                 
+                   
+                var videoTexture = new THREE.VideoTexture(video);
+              
+
+            
+                const plate = new THREE.BoxGeometry(0.2,3.7,8.6);
+                const Mat = new THREE.MeshMatcapMaterial({map: videoTexture});    
+                const screen = new THREE.Mesh(plate,Mat);           
+                screen.position.set(4.75,2.85,-4.47);                 
+                screen.rotation.z=0 ;  
+                
+                scene.add(screen)
+            
+            
+
+                //Tv 2     
+                var video2 = document.getElementById('Video2');
+                video2.loop = true;
+                video2.muted = true;
+                video2.autoplay = false;
+                
+
+                var videoTexture2 = new THREE.VideoTexture(video2);              
+
+            
+                const plate3 = new THREE.BoxGeometry(0.2,4.1,6.8);
+                const Mat4 = new THREE.MeshMatcapMaterial({map: videoTexture2});    
+                const screen4 = new THREE.Mesh(plate3,Mat4);           
+                screen4.position.set(-3.95,11.4,4.58);                 
+                screen4.rotation.y=0 ;  
+                
+                scene.add(screen4)
+            
+                const plate5 = new THREE.BoxGeometry(0.2,4.3,7.1);
+                const Mat5 = new THREE.MeshPhongMaterial({color: 0x0F0700});    
+                const screen5 = new THREE.Mesh(plate5,Mat5);           
+                screen5.position.set(-3.9,11.4,4.58);              
+                screen5.rotation.y=0 ;           
+                screen5.traverse(function (child) {
+                if (child.isMesh) {
+                    child.castShadow = true; // Mesh'in gölgeleri yaymasını sağlar
+                    child.receiveShadow = true; // Mesh'in gölgeleri almasını sağlar
+                }});
+                scene.add(screen5)    
+                    //Tv Ekran Yapısı Sonu
+
+
+                    //YANSIMA EFEKTİ (REFLECTION)
+
+
+                    const mirrorGeometry = new THREE.PlaneGeometry(80, 80);
+    
+    mirror = new THREE.Reflector(mirrorGeometry, {
+        clipBias: 0.003,
+        textureWidth: window.innerWidth * window.devicePixelRatio,
+        textureHeight: window.innerHeight * window.devicePixelRatio,
+         color: 0x889999,
+         recursion: 0.1,
+        shader: {
+            uniforms: {
+
+'color': {
+    value: null
+},
+
+'tDiffuse': {
+    value: null
+},
+
+'textureMatrix': {
+    value: null
+}
+                    
+},
+
+vertexShader: [
+'uniform mat4 textureMatrix;',// Doku matrisi için bir uniform değişken tanımlanır.
+'varying vec4 vUv;',// Geçiş değişkeni tanımlanır.
+
+'void main() {',
+
+'	vUv = textureMatrix * vec4( position, 1.0 );',
+ // yansıyan cismin genişliği
+
+'	gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );',
+ //yansıyan cismin uzunluğu
+
+
+'}'
+].join( '\n' ),
+
+fragmentShader: [
+    // Renk değişkeni
+'uniform vec3 color;',
+// Opaklık değişkeni
+'uniform float opacity;',
+// Örnekleme değişkeni
+'uniform sampler2D tDiffuse;',
+// Varying değişkeni
+'varying vec4 vUv;',
+// İki float değerini karıştıran blendOverlay fonksiyonu
+'float blendOverlay( float base, float blend ) {',
+// Overlay karıştırma formülü
+
+'	return( base < 0.5 ? ( 2.0 * base * blend ) : ( 1.0 - 2.0 * ( 1.0 - base ) * ( 1.0 - blend ) ) );',
+
+'}',
+// İki vec3 değerini karıştıran blendOverlay fonksiyonu
+'vec3 blendOverlay( vec3 base, vec3 blend ) {',
+// Overlay karıştırma formülü
+'	return vec3( blendOverlay( base.r, blend.r ), blendOverlay( base.g, blend.g ), blendOverlay( base.b, blend.b ) );',
+
+'}',
+
+'void main() {',
+// Örnekleme yapılır
+'	vec4 base = texture2DProj( tDiffuse, vUv );',
+// Karıştırma sonucu gl_FragColor'a atanır, base.rgb(taben rengi) ve color(yansıma rengi) arasında
+//bir karışım sağlar ve bu yansımayı camdan yansıma gibi gösterir 0.4:opacity değeri
+'	gl_FragColor = vec4( blendOverlay( base.rgb, color ), 0.1 * base.a );',
+
+'}'
+].join( '\n' )
+        }
+    });
+    mirror.material.blending = THREE.CustomBlending;// Karıştırma modunu özelleştirilmiş olarak ayarla
+    mirror.material.blendSrc = THREE.SrcAlphaFactor;// Karıştırma kaynağını SrcAlphaFactor olarak ayarla
+   mirror.material.blendDst = THREE.OneMinusSrcAlphaFactor;// Karıştırma hedefini OneMinusSrcAlphaFactor olarak ayarla
+    mirror.position.y =0.1;
+    mirror.material.transparent =true;
+    mirror.rotateX(-Math.PI / 2);
+    scene.add(mirror);
+                    //YANSIMA EFEKTİ SONU (REFLECTION)
+
+
+
+
+                    //FLASH EFEKTİ (THUNDER)
+                    flash = new THREE.PointLight(0x062d89, 30, 500, 1.7);
+            flash.position.set(0, 30, 0);
+            scene.add(flash);
+
+                    //FLASH EFEKTİ SONU (THUNDER)
+
+
+            // Studio: Üst Kat. Tabelada tıklanabilir görünmez obje
+            const studioBox = new THREE.BoxGeometry(1, 1, 2.5);
+            const studioMaterial = new THREE.MeshNormalMaterial({ visible: false });
+            // const material = new THREE.MeshNormalMaterial({visible: false});
+            const studio = new THREE.Mesh(studioBox, studioMaterial);
+            studio.position.x = 22.8;
+            studio.position.y = 6.8;
+            studio.position.z = -7.8;
+            studio.rotation.y = Math.PI / 8;
+            scene.add(studio);
+            function studioEvent() {
+                camTimeline.to(camera.position, {
+                    x: 80.41424455437498,
+                    y: 15.672288538780242,
+                    z: 6.575903976332944,
+                    duration: 1.2,
+                    onUpdate: function () {
+                        camera.lookAt(0, 0, 0);
+                        controls.target.set(2.45394348865651, 12.220378842270456, 4.104752933072091);
+                        controls.autoRotate=false ;
+                        controls.update();
+                    }
+                });
+
+                setTimeout(() => {
+                    window.location.href = "/studio.html";
+                }, 1200);
+            };
+            domEvents.addEventListener(studio, 'click', event => {
+                playAudio(sound1, 'audio/click2.mp3', false);
+                studioEvent();
+                setTimeout(() => {
+                    playAudio(sound2, 'audio/transition.mp3', false);
+                }, 300);
+            });
+            domEvents.addEventListener(studio, 'touchstart', event => {
+                playAudio(sound1, 'audio/click2.mp3', false);
+                studioEvent();
+                setTimeout(() => {
+                    playAudio(sound2, 'audio/transition.mp3', false);
+                }, 300);
+            });
+            // Kapı objesi
+            const studioPlace = new THREE.BoxGeometry(0.1, 2, 2);
+            const stPlaceMaterial = new THREE.MeshNormalMaterial({ visible: false });
+            // const material = new THREE.MeshNormalMaterial({visible: false});
+            const stPlace = new THREE.Mesh(studioPlace, stPlaceMaterial);
+            stPlace.position.x = 4;
+            stPlace.position.y = 12.5;
+            stPlace.position.z = 4.5;
+            scene.add(stPlace);
+            domEvents.addEventListener(stPlace, 'click', event => {
+                studioEvent();
+                setTimeout(() => {
+                    playAudio(sound2, 'audio/transition.mp3', false);
+                }, 300);
+            });
+            domEvents.addEventListener(stPlace, 'touchstart', event => {
+                studioEvent();
+                setTimeout(() => {
+                    playAudio(sound2, 'audio/transition.mp3', false);
+                }, 300);
+            });
+            // Kapı arka taraf
+            const studioBack = new THREE.BoxGeometry(1, 8, 7);
+            const stBackMaterial = new THREE.MeshNormalMaterial({ visible: false });
+            // const material = new THREE.MeshNormalMaterial({visible: false});
+            const stBack = new THREE.Mesh(studioBack, stBackMaterial);
+            stBack.position.x = 3;
+            stBack.position.y = 12.5;
+            stBack.position.z = 4;
+            scene.add(stBack);
+            domEvents.addEventListener(stBack, 'click', event => {});
+            domEvents.addEventListener(stBack, 'touchstart', event => {});
+            
+            // About: Kitap. Tabelada tıklanabilir görünmez obje
+            const aboutBox = new THREE.BoxGeometry(1, 1, 2.5);
+            const aboutMaterial = new THREE.MeshNormalMaterial({ visible: false });
+            // const material = new THREE.MeshNormalMaterial({visible: false});
+            const about = new THREE.Mesh(aboutBox, aboutMaterial);           
+            about.position.x = 22.8;
+            about.position.y = 3.9;
+            about.position.z = -7.8;
+            about.rotation.y = Math.PI / 2.3;
+            scene.add(about);
+            function aboutEvent() {
+                camTimeline.to(camera.position, {
+                    x: -4.312290893397798,
+                    y: 11.492728688469583,
+                    z: 229.94702068118,
+                    duration: 2.2,
+                    onUpdate: function () {
+                        camera.lookAt(0, 0, 0);
+                        controls.target.set(-0.1704268880906761, 5.590436419571466, 2.4711956843208425);
+                        controls.autoRotate=false ;
+                        controls.update();
+                    }
+                });
+
+                changeIframe("pages/projeler.html");
+                setTimeout(() => {
+                    let modal = document.getElementById('open-modal');
+                    window.open('https://www.youtube.com/@neomani', '_blank');
+                    modal.classList.add("open");
+                  
+                }, 2300);
+            };
+            domEvents.addEventListener(about, 'click', event => {
+                playAudio(sound1, 'audio/click2.mp3', false);
+                aboutEvent();
+                setTimeout(() => {
+                    playAudio(sound2, 'audio/transition.mp3', false);
+                }, 300);
+            });
+            domEvents.addEventListener(about, 'touchstart', event => {
+                playAudio(sound1, 'audio/click2.mp3', false);
+                aboutEvent();
+                setTimeout(() => {
+                    playAudio(sound2, 'audio/transition.mp3', false);
+                }, 300);
+            });
+            // Kitap objesi
+            const aboutPlace = new THREE.BoxGeometry(1, 2, 2);
+            const abPlaceMaterial = new THREE.MeshNormalMaterial({ visible: false});
+            // const material = new THREE.MeshNormalMaterial({visible: false});
+            const abPlace = new THREE.Mesh(aboutPlace, abPlaceMaterial);
+            abPlace.position.x = 0;
+            abPlace.position.y = 3.5;
+            abPlace.position.z = 10.5;
+            scene.add(abPlace);
+            domEvents.addEventListener(abPlace, 'click', event => {
+                aboutEvent();
+                setTimeout(() => {
+                    playAudio(sound2, 'audio/transition.mp3', false);
+                }, 300);
+            });
+            domEvents.addEventListener(abPlace, 'touchstart', event => {
+                aboutEvent();
+                setTimeout(() => {
+                    playAudio(sound2, 'audio/transition.mp3', false);
+                }, 300);
+            });
+            // Kitap arka taraf
+            const aboutBack = new THREE.BoxGeometry(8, 6, 1);
+            const abBackMaterial = new THREE.MeshNormalMaterial({ visible: false });
+            // const material = new THREE.MeshNormalMaterial({visible: false});
+            const abBack = new THREE.Mesh(aboutBack, abBackMaterial);
+            abBack.position.x = 0;
+            abBack.position.y = 4.5;
+            abBack.position.z = 8;
+            scene.add(abBack);
+            domEvents.addEventListener(abBack, 'click', event => {});
+            domEvents.addEventListener(abBack, 'touchstart', event => {});
+
+            // Project: Kamera. Tabelada tıklanabilir görünmez obje ==> Hakkımızda (About)
+            const projectBox = new THREE.BoxGeometry(1, 1, 2.5);
+            const projectMaterial = new THREE.MeshNormalMaterial({ visible: false });
+            // const material = new THREE.MeshNormalMaterial({visible: false});
+            const project = new THREE.Mesh(projectBox, projectMaterial);
+            project.position.x = 21.5;
+            project.position.y = 5.3;
+            project.position.z = -8.5;
+            project.rotation.y = Math.PI / 8;
+            scene.add(project);
+            function projectEvent() {
+                camTimeline.to(camera.position, {
+                    x: 121.09400014610742,
+                    y: 18.431145729351357,
+                    z: -91.14092197216299,
+                    duration: 1.2,
+                    onUpdate: function () {
+                        camera.lookAt(0, 0, 0);
+                        controls.target.set(-1.4415170064833187, 10.602377173810995, -3.271100942646351);
+                        controls.autoRotate=false ;
+                        controls.update();
+                    }
+                });
+
+                changeIframe("pages/hakkimizda.html");
+                setTimeout(() => {
+                    let modal = document.getElementById('open-modal');                  
+                    modal.classList.add("open");
+                }, 1200);
+            };
+            domEvents.addEventListener(project, 'click', event => {
+                playAudio(sound1, 'audio/click2.mp3', false);
+                projectEvent();
+                setTimeout(() => {
+                    playAudio(sound2, 'audio/transition.mp3', false);
+                }, 300);
+            });
+            domEvents.addEventListener(project, 'touchstart', event => {
+                playAudio(sound1, 'audio/click2.mp3', false);
+                projectEvent();
+                setTimeout(() => {
+                    playAudio(sound2, 'audio/transition.mp3', false);
+                }, 300);
+            });
+            // Kamera objesi
+            const projectPlace = new THREE.BoxGeometry(1, 1.8, 1);
+            const prPlaceMaterial = new THREE.MeshNormalMaterial({ visible: false });
+            // const material = new THREE.MeshNormalMaterial({visible: false});
+            const prPlace = new THREE.Mesh(projectPlace, prPlaceMaterial);
+            prPlace.position.x = 1.5;
+            prPlace.position.y = 12.5;
+            prPlace.position.z = -6;
+            scene.add(prPlace);
+            domEvents.addEventListener(prPlace, 'click', event => {
+                projectEvent();
+                setTimeout(() => {
+                    playAudio(sound2, 'audio/transition.mp3', false);
+                }, 300);
+            });
+            domEvents.addEventListener(prPlace, 'touchstart', event => {
+                projectEvent();
+                setTimeout(() => {
+                    playAudio(sound2, 'audio/transition.mp3', false);
+                }, 300);
+            });
+
+            // Social: Pencere. Tabelada tıklanabilir görünmez obje
+            const socialBox = new THREE.BoxGeometry(1, 1, 2.5);
+            const socialMaterial = new THREE.MeshNormalMaterial({ visible: false });
+            // const material = new THREE.MeshNormalMaterial({visible: false});
+            const social = new THREE.Mesh(socialBox, socialMaterial);
+            social.position.x = 21.5;
+            social.position.y = 2.4;
+            social.position.z = -8.5;
+            social.rotation.y = Math.PI / 2.3;
+            scene.add(social);
+            function socialEvent() {
+                camTimeline.to(camera.position, {
+                    x: -1.5908093287154956,
+                    y: 8.605799525170768,
+                    z: -249.7308362919161,
+                    duration: 1.2,
+                    onUpdate: function () {
+                        camera.lookAt(0, 0, 0);
+                        controls.target.set(-0.45884816292849845, 8.605799525170752, 2.4439935451134858);
+                        controls.autoRotate=false ;
+                        controls.update();
+                    }
+                });
+
+                changeIframe("pages/sosyal-medya.html");
+                setTimeout(() => {
+                    let modal = document.getElementById('open-modal');
+                    modal.classList.add("open");
+                }, 1200);
+            };
+            domEvents.addEventListener(social, 'click', event => {
+                playAudio(sound1, 'audio/click2.mp3', false);
+                socialEvent();
+                setTimeout(() => {
+                    playAudio(sound2, 'audio/transition.mp3', false);
+                }, 300);
+            });
+            domEvents.addEventListener(social, 'touchstart', event => {
+                playAudio(sound1, 'audio/click2.mp3', false);
+                socialEvent();
+                setTimeout(() => {
+                    playAudio(sound2, 'audio/transition.mp3', false);
+                }, 300);
+            });
+            // Pencere objesi
+            const socialPlace = new THREE.BoxGeometry(2, 8, 1);
+            const scPlaceMaterial = new THREE.MeshNormalMaterial({ visible: false });
+            // const material = new THREE.MeshNormalMaterial({visible: false});
+            const scPlace = new THREE.Mesh(socialPlace, scPlaceMaterial);
+            scPlace.position.x = 0;
+            scPlace.position.y = 4.7;
+            scPlace.position.z = -9.5;
+            scene.add(scPlace);
+            domEvents.addEventListener(scPlace, 'click', event => {
+                socialEvent();
+                setTimeout(() => {
+                    playAudio(sound2, 'audio/transition.mp3', false);
+                }, 300);
+            });
+            domEvents.addEventListener(scPlace, 'touchstart', event => {
+                socialEvent();
+                setTimeout(() => {
+                    playAudio(sound2, 'audio/transition.mp3', false);
+                }, 300);
+            });
+            // Pencere arka taraf
+            const socialBack = new THREE.BoxGeometry(8, 9, 1);
+            const scBackMaterial = new THREE.MeshNormalMaterial({ visible: false });
+            // const material = new THREE.MeshNormalMaterial({visible: false});
+            const scBack = new THREE.Mesh(socialBack, scBackMaterial);
+            scBack.position.x = 0;
+            scBack.position.y = 4.7;
+            scBack.position.z = -8;
+            scene.add(scBack);
+            domEvents.addEventListener(scBack, 'click', event => {});
+            domEvents.addEventListener(scBack, 'touchstart', event => {});
+
+            // İletişim: Posta kutusu. Tabelada tıklanabilir görünmez obje
+            const contactBox = new THREE.BoxGeometry(1, 1, 2.5);
+            const contactMaterial = new THREE.MeshNormalMaterial({ visible: false });
+            // const material = new THREE.MeshNormalMaterial({visible: false});
+            const contact = new THREE.Mesh(contactBox, contactMaterial);
+            contact.position.x = 22.8;
+            contact.position.y = 1.1;
+            contact.position.z = -7.8;
+            contact.rotation.y = Math.PI / 8;
+            scene.add(contact);
+            function contactEvent() {
+                camTimeline.to(camera.position, {
+                    x: 180.60033311656417,
+                    y: 12.154797114117422,
+                    z: 83.36687363913406,
+                    duration: 1.2,
+                    onUpdate: function () {
+                        camera.lookAt(0, 0, 0);
+                        controls.target.set(4.800823009247212, 5.829598769513562, -1.073978052002158);
+                        controls.autoRotate=false ;
+                        controls.update();
+                    }
+                });
+
+                changeIframe("pages/iletisim.html");
+                setTimeout(() => {
+                    let modal = document.getElementById('open-modal');
+                    modal.classList.add("open");
+                }, 300);
+            };
+            domEvents.addEventListener(contact, 'click', event => {
+                playAudio(sound1, 'audio/click2.mp3', false);
+                contactEvent();
+                setTimeout(() => {
+                    playAudio(sound2, 'audio/transition.mp3', false);
+                }, 300);
+            });
+            domEvents.addEventListener(contact, 'touchstart', event => {
+                playAudio(sound1, 'audio/click2.mp3', false);
+                contactEvent();
+                setTimeout(() => {
+                    playAudio(sound2, 'audio/transition.mp3', false);
+                }, 300);
+            });
+            // Posta kutusu objesi
+            const contactPlace = new THREE.BoxGeometry(1.2, 2, 1);
+            const ctPlaceMaterial = new THREE.MeshNormalMaterial({ visible: false});
+            // const material = new THREE.MeshNormalMaterial({visible: false});
+            const ctPlace = new THREE.Mesh(contactPlace, ctPlaceMaterial);
+            ctPlace.position.x = 19.5;
+            ctPlace.position.y = 5;
+            ctPlace.position.z = 6.2;
+            ctPlace.rotation.y = Math.PI / 4;
+            scene.add(ctPlace);
+            domEvents.addEventListener(ctPlace, 'click', event => {
+                contactEvent();
+                setTimeout(() => {
+                    playAudio(sound2, 'audio/transition.mp3', false);
+                }, 300);
+            });
+            domEvents.addEventListener(ctPlace, 'touchstart', event => {
+                contactEvent();
+                setTimeout(() => {
+                    playAudio(sound2, 'audio/transition.mp3', false);
+                }, 300);
+            });
+
+            var manager = new THREE.LoadingManager();
+            const fbxLoader = new THREE.FBXLoader(manager);
+            const object = new THREE.Object3D();          
+            fbxLoader.load('outside/house6.fbx', (object) => {                                     
+                manager.onProgress = function(item, loaded, total, ) {
+                    var percentage = parseInt((loaded / total * 100)) + '%';
+                    document.getElementById('percentage').textContent = percentage;
+                };
+                object.traverse(function (child) {
+                if (child.isMesh) {
+                    child.castShadow = true; // Mesh'in gölgeleri yaymasını sağlar
+                    child.receiveShadow = true; // Mesh'in gölgeleri almasını sağlar
+                }
+                });
+                manager.onLoad = function ( ) {
+                    var preloader = document.getElementById('loader');                  
+                    var clickButton = document.getElementById('click-button');
+                    setTimeout(function() {     
+      // Yükleme işlemi tamamlandığında click olayı dinleyicisi ekle
+      clickButton.addEventListener('click', function() {
+        preloader.style.display = 'none';       
+        camera.position.set(110, 129, 345);       
+        toStartingPointfirst(); 
+        animate();
+             
+      });      
+    });
+   };
+
+ 
+
+ playAudio(sound3, 'audio/wind.mp3', true);
+
+                mixer = new THREE.AnimationMixer(object);
+                const animationAction = mixer.clipAction(
+                    object.animations[0 ]
+                );
+                animationAction.play();
+                scene.add(object);                         
+                // animate();
+                
+            });               
+            
+            function animatename (){
+                    for (var i = 0; i < object.animations.length; i++) {
+  console.log("Animasyon " + i + ": " + animations[i].name);
+}}
+
+
+var cameraTarget = new THREE.Vector3();
+var geometry = new THREE.SphereGeometry(400, 130, 130);
+var material = new THREE.MeshBasicMaterial({ map: videoTexture4 ,  
+side :THREE.DoubleSide});
+var cube = new THREE.Mesh(geometry, material);
+cube.position.set(0,15,0);
+scene.add(cube);
+
+function updateCamera() { 
+  cube.position.copy(camera.position);
+  cube.rotation.copy(camera.rotation);
+}
+                 
+   
+                function animate() {                    
+             
+            if (Math.random() > 0.93 || flash.power > 100) {
+                flash.position.set(
+                    Math.random() * 100,
+                    300 + Math.random() * 1200,
+                    100
+                );
+                flash.power = 20 + Math.random() * 1500;
+            };
+
+
+                    renderer.render(scene, camera);
+                    renderer.shadowMap.enabled = true;
+                    requestAnimationFrame(animate);   
+                    // mixer.update(clock.getDelta());
+                    controls.update();
+                    video.play();
+                    video2.play();
+                    video3.play();
+                    video4.play();
+                    animatename();    
+                    updateCamera();
+                    thunder();
+                    // composer.render();             
+                }                                 
+            
+
+
+
+            
+            }//init son parantez 
+
+                const clock = new THREE.Clock();      
+
+                init();    
+                
+
+
+                  
+    </script>
+        
+   <script>
+        function changeIframe(change) {
+            document.getElementById('pageFrame').src = change;
+        }
+        function toStartingPointfirst() {
+            if (window.innerWidth < 440) {
+                camTimeline.to(camera.position, {
+                    x: 401,
+                    y: 29,
+                    z: -298,
+                    duration: 2.2,                  
+                    onUpdate: function () {
+                        controls.target.set(2.7226311328134223, 9.219376713683292, 2.429712536121185);
+                        playAudio(sound2, 'audio/transition.mp3', false);
+                        controls.update();
+                           
+                    }
+                });   
+            }
+            else {
+                camTimeline.to(camera.position, {
+                    x: 201,
+                    y: 29,
+                    z: -298,
+                    duration: 2.2,
+                    onUpdate: function () {
+                        controls.target.set(2.7226311328134223, 9.219376713683292, 2.429712536121185);
+                        playAudio(sound2, 'audio/transition.mp3', false);
+                        controls.update();
+                    }
+                });
+            }
+        }
+
+        function toStartingPoint() {
+            if (window.innerWidth < 440) {
+                camTimeline.to(camera.position, {
+                    x: 401,
+                    y: 29,
+                    z: -298,
+                    duration: 2.2,                  
+                    onUpdate: function () {
+                        controls.target.set(2.7226311328134223, 9.219376713683292, 2.429712536121185);
+                        controls.update();
+                           
+                    }
+                });   
+            }
+            else {
+                camTimeline.to(camera.position, {
+                    x: 201,
+                    y: 29,
+                    z: -298,
+                    duration: 2.2,
+                    onUpdate: function () {
+                        controls.target.set(2.7226311328134223, 9.219376713683292, 2.429712536121185);
+                        controls.update();
+                    }
+                });
+            }
+        }
+
+        let modal = document.getElementById('open-modal');
+        modal.addEventListener("click",function(e){
+           closeModal();
+        },false);
+
+        function closeModal() {
+            changeIframe("");
+            modal.classList.remove("open");
+            toStartingPoint();
+            playAudio(sound2, 'audio/transition.mp3', false);
+            controls.autoRotate=true;
+        }
+       
+    </script>
+</body>
+</html>
